@@ -1,4 +1,3 @@
-from pdb import pm
 from pypresence import Presence
 import emulador
 from time import sleep, time
