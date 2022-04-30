@@ -3,19 +3,33 @@ from pymem.process import *
 import time
 class Emulador:
     def __init__(self):
+            self.pm = None
+            self.actualGame = ""
+            self.baseAddress =  None
+            self.offsets = [0x0] # Segmento do texto do jogo (Não mexer)
+            self.STRING_SIZE = 1000
+    
+    def startEmulator(self):
+        try:
             self.pm = Pymem("pcsx2.exe")
-            self.baseAddress =  self.pm.base_address
-            self.offsets = [0x54] # Segmento do texto do jogo (Não mexer)
-            self.STRING_SIZE = 100 
+            self.baseAddress = self.pm.base_address
+            return True
+        except:
+            self.setActualGame("")
+            return False
+    
+    
     
     def calculateMemoryAddress(self, address):
         return self.pm.read_int(self.baseAddress + address)
     
     def getGameName(self):
-        if(self.gameIsRunning):
-            for offset in self.offsets:
+        if(self.gameIsRunning()):
+             for offset in self.offsets:
                 valor = self.pm.read_string(self.calculateMemoryAddress(0x23C08B0) + offset, self.STRING_SIZE)
-            return valor
+             valor = valor.split("\\")
+             valor = valor[len(valor)-1].split(".")[0]
+             return valor
 
         
     def gameIsRunning(self):
@@ -23,3 +37,10 @@ class Emulador:
             return True
         else:
             return False
+        
+    def getActualGame(self):
+        return self.actualGame
+    
+    def setActualGame(self, game):
+        self.actualGame = game
+        

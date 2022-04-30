@@ -1,11 +1,14 @@
+from pdb import pm
 from pypresence import Presence
 import emulador
 from time import sleep, time
 from os import system
-
-
-RPC = Presence("YOUR_CLIENT_ID")
+system("color 0a")
+system("cls")
+RPC = Presence("966169367802937385")
 RPC.connect()
+
+
 
 def setStatusEmulator(emulatorState):
     RPC.update(state=emulatorState, large_image="logo", large_text="PCSX2")
@@ -14,31 +17,32 @@ def setStatus(gameName, counter):
     RPC.update(state=gameName, start=counter ,large_image="logo", large_text="PCSX2")
 
 
-
-
-ActualGame = ""
-isRunningEmulator = False        
+emulator = emulador.Emulador()  
+updatedRPC = False
 while True:
-    try:
+    if(emulator.startEmulator()):
         system("cls")
-        print("===========================================================")
+        updatedRPC = False
+        print("="*59)
         print("|            Rich Presence PCSX2 inicializado             |")
-        print("===========================================================")
-        emulator = emulador.Emulador()
-        if(emulator.gameIsRunning() and emulator.getGameName() != ActualGame):
+        print("="*59)
+        
+        if(emulator.gameIsRunning() and emulator.getGameName() != emulator.getActualGame()):
             setStatus(emulator.getGameName(), time())
-            ActualGame = emulator.getGameName()
-        elif(not emulator.gameIsRunning() and not isRunningEmulator):
+            emulator.setActualGame(emulator.getGameName())
+        elif(not emulator.gameIsRunning() and (emulator.getActualGame() == "" or emulator.getActualGame() != "Main Menu")):
             setStatusEmulator("Main Menu")
-            ActualGame = ""
-        isRunningEmulator = True
-    except:
-        if(isRunningEmulator):
-            RPC.update()
-        isRunningEmulator = False
-        system("color 0a")
+            print(emulator.getActualGame())
+            emulator.setActualGame("Main Menu")
+        
+    else:
         system("cls")
-        print("===========================================================")
-        print("|   o PCSX2 não está em execução ou não está em memória   |")
-        print("===========================================================")
+        if(not updatedRPC):
+            RPC.update()
+            updatedRPC = True
+
+        print("="*59)
+        print("|            PCSX2 não está em execução!               |")
+        print("="*59)
+
     sleep(5)
