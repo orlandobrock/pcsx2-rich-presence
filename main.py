@@ -4,7 +4,7 @@ from time import sleep, time
 from os import system
 system("color 0a")
 system("cls")
-RPC = Presence("966169367802937385")
+RPC = Presence("DEVELOPER TOKEN DISCORD")
 RPC.connect()
 
 
